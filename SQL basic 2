@@ -319,3 +319,211 @@ department count(worker_id)
 HR	2
 Admin	5
 Account	2
+-- print details of the Workers who are also Managers.
+
+select worker_id, fname, lname, salary, joining_date, department, t.worker_title from worker w,title t where w.worker_id=t.WORKER_REF_ID and t.worker_title='Manager';
+
+worker_id fname lname salary joining_date department worker_title
+1	Monika	Arora	100000	2021-02-20 09:00:00	HR	Manager
+5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin	Manager
+
+-- fetch duplicate records having matching data in some fields of a table.
+
+select worker_title,titled_date, count(*) as cc from title group by worker_title,titled_date having cc>1;
+
+worker_title titled_date cc
+Executive 2023-06-11 00:00:00	3
+Lead	  2023-06-11 00:00:00	2
+
+
+-- show only odd rows from a table
+
+select * from worker where mod(worker_id,2) <> 0;
+
+worker_id fname lname salary joining_date department
+1	Monika	Arora	100000	2021-02-20 09:00:00	HR
+3	Vishal	Singhal	300000	2021-02-20 09:00:00	HR
+5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin
+7	Satish	Kumar	75000	2021-01-20 09:00:00	Account
+9	Mohan	Sharma	550000	2021-03-24 09:00:00	Admin
+
+-- clone a new table from another table.
+
+create table worker_clone like worker;
+select * from worker_clone;
+
+worker_id  fname  lname  salary  joining_date  department
+1	Monika	Arora	100000	2021-02-20 09:00:00	HR
+2	Niharika	Verma	80000	2021-06-11 09:00:00	Admin
+3	Vishal	Singhal	300000	2021-02-20 09:00:00	HR
+4	Amitabh	Singh	500000	2021-02-20 09:00:00	Admin
+5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin
+6	Vipul	Diwan	200000	2021-06-11 09:00:00	Account
+7	Satish	Kumar	75000	2021-01-20 09:00:00	Account
+8	Geetika	Chauhan	90000	2021-04-11 09:00:00	Admin
+9	Mohan	Sharma	550000	2021-03-24 09:00:00	Admin
+
+
+-- fetch intersecting records of two tables.
+
+select * from worker as w
+inner join title as t
+on w.worker_id=t.WORKER_REF_ID;
+
+worker_id fname lname salary joining_date department WORKER_REF_ID worker_title titled_date
+1	Monika	Arora	100000	2021-02-20 09:00:00	HR	1	Manager		2023-02-20 00:00:00
+2	Niharika Verma	80000	2021-06-11 09:00:00	Admin	2	Executive	2023-06-11 00:00:00
+3	Vishal	Singhal	300000	2021-02-20 09:00:00	HR	3	Lead		2023-06-11 00:00:00
+4	Amitabh	Singh	500000	2021-02-20 09:00:00	Admin	4	Asst. Manager	2023-06-11 00:00:00
+5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin	5	Manager		2023-06-11 00:00:00
+6	Vipul	Diwan	200000	2021-06-11 09:00:00	Account	6	Lead		2023-06-11 00:00:00
+7	Satish	Kumar	75000	2021-01-20 09:00:00	Account	7	Executive	2023-06-11 00:00:00
+8	Geetika	Chauhan	90000	2021-04-11 09:00:00	Admin	8	Executive	2023-06-11 00:00:00
+
+
+-- show records from one table that another table does not have.
+
+select * from worker w
+where worker_id not in (
+select worker_ref_id from bonus);
+
+worker_id fname lname  salary  joining_date 	        department
+4	Amitabh	Singh	500000	2021-02-20 09:00:00	Admin
+5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin
+6	Vipul	Diwan	200000	2021-06-11 09:00:00	Account
+7	Satish	Kumar	75000	2021-01-20 09:00:00	Account
+8	Geetika	Chauhan	90000	2021-04-11 09:00:00	Admin
+9	Mohan	Sharma	550000	2021-03-24 09:00:00	Admin
+					
+
+
+-- current date and time.
+
+select current_timestamp();
+
+current_timestamp()
+2024-01-23 16:26:17
+
+
+-- show the top n (say 5) records of a table.
+
+select * from worker limit 5;
+-- SELECT TOP 5 * FROM Worker ;
+
+worker_id fname lname salary joining_date department
+1	Monika	Arora	100000	2021-02-20 09:00:00	HR
+2	Niharika Verma	80000	2021-06-11 09:00:00	Admin
+3	Vishal	Singhal	300000	2021-02-20 09:00:00	HR
+4	Amitabh	Singh	500000	2021-02-20 09:00:00	Admin
+5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin
+
+
+ -- determine the nth (say n=5) highest salary from a table.
+
+select * from worker order by salary desc limit 4,1;
+
+worker_id fname lname salary joining_date department
+6         Vipul	Diwan	200000	2021-06-11 09:00:00  Account
+
+
+-- fetch the list of employees with the same salary.
+
+select * from worker w, worker w1 
+where w.salary=w1.salary and w.worker_id!=w1.worker_id;
+
+worker_id, fname, lname, salary, joining_date, department, worker_id, fname, lname, salary, joining_date, department
+5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin	4	Amitabh	Singh	500000	2021-02-20 09:00:00	Admin
+4	Amitabh	Singh	500000	2021-02-20 09:00:00	Admin	5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin
+
+-- fetch the first 50% of records from a table.
+
+select * from worker where worker_id <= (select count(*)/2 from worker);
+
+worker_title titled_date cc
+Executive  2023-06-11 00:00:00	3
+Lead	   2023-06-11 00:00:00	2
+
+
+-- fetch the departments that have less than five people in them.
+
+select department,count() from worker group by department having count()<5;
+
+department  count(*)
+HR	    2
+Account	    2
+
+
+-- show all departments along with the number of people in there.
+
+select department,count(*) as No_of_workers from worker group by department;
+
+department      No_of_workers
+HR		2
+Admin		5
+Account		2
+
+
+-- show the last record from a table.
+
+select * from worker order by worker_id desc limit 1;
+
+worker_id fname lname   salary  joining_date            department
+9	  Mohan	Sharma	550000	2021-03-24 09:00:00	Admin
+
+
+-- names of employees having the highest salary in each department.
+
+select w.fname,w.lname,w.salary,w.department from (select max(salary) as salary,department from worker group by department) as w1 
+inner join worker as w 
+on w1.department=w.department and w1.salary=w.salary;
+
+fname  lname    salary  department
+Vishal	Singhal	300000	HR
+Vipul	Diwan	200000	Account
+Mohan	Sharma	550000	Admin
+
+
+-- fetch three max salaries from a table.
+
+select * from worker order by salary desc limit 3;
+
+worker_id fname lname  salary  joining_date           department
+9	Mohan	Sharma	550000	2021-03-24 09:00:00	Admin
+4	Amitabh	Singh	500000	2021-02-20 09:00:00	Admin
+5	Vivek	Bhati	500000	2021-06-11 09:00:00	Admin
+
+
+-- fetch three min salaries from a table.
+
+select * from worker order by salary limit 3;
+
+worker_id fname lname  salary  joining_date           department
+7	Satish	Kumar	75000	2021-01-20 09:00:00	Account
+2	Niharika Verma	80000	2021-06-11 09:00:00	Admin
+8	Geetika	Chauhan	90000	2021-04-11 09:00:00	Admin
+
+
+-- fetch departments along with the total salaries paid for each of them.
+
+select department,sum(salary) from worker group by department;
+
+department sum(salary)
+HR	400000
+Admin	1720000
+Account	275000
+
+
+-- fetch the names of workers who earn the highest salary.
+
+select * from worker where salary = (select max(salary) from worker);
+
+worker_id fname lname  salary  joining_date            department
+9	Mohan	Sharma	550000	2021-03-24 09:00:00	Admin
+
+
+
+
+
+
+
+
